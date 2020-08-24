@@ -7,30 +7,17 @@ import iroha.queries_pb2 as queries_pb2
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
 from iroha import Iroha, IrohaGrpc
 from iroha import IrohaCrypto as ic
-from cli import print_msg
+from cli import console
+
 
 class IrohaClient:
-    
     def __init__(self, creator_account, private_key, iroha_host):
         self.creator_account = creator_account
         self.iroha = Iroha(creator_account)
+        self.ic = ic
         self.permissions = iroha_primitive
         self.user_private_key = private_key
         self.net = IrohaGrpc(iroha_host, timeout=60)
-
-    def send_transaction_and_print_status(self, transaction):
-
-        hex_hash = binascii.hexlify(ic.hash(transaction))
-        print_msg('Transaction Hash {hex_hash}')
-        print(
-            "Transaction hash = {}, creator = {}".format(
-                hex_hash, transaction.payload.reduced_payload.creator_account_id
-            )
-        )
-        self.net.send_tx(transaction)
-        for status in self.net.tx_status_stream(transaction):
-            print(status)
-        return hex_hash
 
     def send_batch_and_print_status(self, transactions):
 
@@ -46,32 +33,46 @@ class IrohaClient:
             for status in self.net.tx_status_stream(tx):
                 print(status)
 
-    def send_batch_and_return_status(self, *transactions):
-        self.net.send_txs(transactions)
-        for tx in transactions:
-            hex_hash = binascii.hexlify(ic.hash(tx))
-            print("\t" + "-" * 20)
-            print(
-                "Transaction hash = {}, creator = {}".format(
-                    hex_hash, tx.payload.reduced_payload.creator_account_id
-                )
-            )
-            tx_result = []
-            for status in self.net.tx_status_stream(transactions):
-                tx_result.append(status)
+    def submit_transaction(self, transaction):
+        hex_hash = str(binascii.hexlify(self.ic.hash(transaction)), "utf-8")
+        tx_result = {}
+        msg = f"[bold yellow]Transaction Hash:[/bold yellow] [bold green]{hex_hash}[/bold green] \n[bold yellow]Creator Account ID:[/bold yellow] [bold green]{transaction.payload.reduced_payload.creator_account_id}[/bold green]"
+        console.print(msg)
+        try:
+            self.net.send_tx(transaction)
+            tx_status = []
+            for status in self.net.tx_status_stream(transaction):
+                tx_status.append(status)
+            tx_result = {
+                "tx_hash": hex_hash,
+                "tx_statuses": tx_status,
+                "tx_result": tx_status[-1][0],
+            }
+            console.print(f"{tx_result}")
+        except Exception as error:
+            print(error)
+            tx_result = {
+                "tx_hash": hex_hash,
+                "tx_statuses": [],
+                "tx_result": "REJECTED",
+            }
+            console.print(tx_result)
+        finally:
             return tx_result
 
     def send_transaction_print_status_and_return_result(self, transaction):
         """
         Main Transaction submission
         """
-        hex_hash = binascii.hexlify(ic.hash(transaction))
-        
-        print(
-            "Transaction hash = {}, \n creator = {}".format(
-                hex_hash, transaction.payload.reduced_payload.creator_account_id
-            )
-        )
+        hex_hash = binascii.hexlify(self.ic.hash(transaction))
+        msg = f"""
+                Transaction Hash:
+                \n [bold green]{hex_hash}[/bold green]
+                \n
+                Creator Account ID:
+                \n [bold green]{transaction.payload.reduced_payload.creator_account_id}[/bold green]
+                \n"""
+        print_msg(msg)
         self.net.send_tx(transaction)
         tx_result = []
         for status in self.net.tx_status_stream(transaction):
@@ -86,7 +87,7 @@ class IrohaClient:
         tx = ParseDict(transaction, new_tx)
         print(tx)
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def check_pending_txs(self):
         query = self.iroha.query("GetPendingTransactions")
@@ -152,7 +153,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def set_account_detail(self, account_id, key, value):
         tx = self.iroha.transaction(
@@ -163,7 +164,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def create_domain(self, domain_id, default_role):
         """
@@ -177,7 +178,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     ### Dev Batch Functions
 
@@ -246,7 +247,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def grant_account_write_permission(self, account_id):
         """
@@ -262,7 +263,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def grant_account_read_permission(self, account_id):
         tx = self.iroha.transaction(
@@ -275,7 +276,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     # add signatory
     # remove signatory
@@ -287,7 +288,7 @@ class IrohaClient:
         peer.peer_key = peer_key
         tx = self.iroha.transaction([self.iroha.command("AddPeer", peer=peer)])
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def grant_asset_tx_history_permission(self, account_id):
         tx = self.iroha.transaction(
@@ -300,7 +301,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def grant_account_tx_history_permission(self, account_id):
         tx = self.iroha.transaction(
@@ -313,7 +314,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def create_new_asset(self, asset, domain, precision):
         tx = self.iroha.transaction(
@@ -327,7 +328,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def transfer_asset(self, account_id, recipient, asset_id, description, qty):
         tx = self.iroha.transaction(
@@ -343,7 +344,7 @@ class IrohaClient:
             ]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def add_asset_qty(self, asset_id, qty):
         """
@@ -353,7 +354,7 @@ class IrohaClient:
             [self.iroha.command("AddAssetQuantity", asset_id=asset_id, amount=qty)]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)
 
     def subtract_asset_qty(self, asset_id, qty):
         """
@@ -363,4 +364,4 @@ class IrohaClient:
             [self.iroha.command("SubtractAssetQuantity", asset_id=asset_id, amount=qty)]
         )
         ic.sign_transaction(tx, self.user_private_key)
-        self.send_transaction_print_status_and_return_result(tx)
+        self.submit_transaction(tx)

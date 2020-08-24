@@ -11,3 +11,8 @@ Poetry (Manages Virtual Environments & Setup)
 ## Todo
 
 **TBA**
+
+### Commands
+
+- [x] CreateAccount
+- [ ] SetAccountDetail
