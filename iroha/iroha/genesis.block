@@ -57,7 +57,8 @@
                                 "can_receive",
                                 "can_remove_signatory",
                                 "can_set_quorum",
-                                "can_transfer"
+                                "can_transfer",
+                                "can_set_detail"
                              ]
                           }
                        },
@@ -74,40 +75,75 @@
                        },
                        {
                           "createDomain":{
-                             "domainId":"test",
+                             "domainId":"iroha",
                              "defaultRole":"user"
                           }
                        },
                        {
                           "createAsset":{
                              "assetName":"coin",
-                             "domainId":"test",
+                             "domainId":"iroha",
                              "precision":2
+                          }
+                       },
+                       {
+                          "createAsset":{
+                             "assetName":"btc",
+                             "domainId":"iroha",
+                             "precision":8
+                          }
+                       },
+                       {
+                          "createAsset":{
+                             "assetName":"ltc",
+                             "domainId":"iroha",
+                             "precision":8
+                          }
+                       },
+                       {
+                          "createAsset":{
+                             "assetName":"eth",
+                             "domainId":"iroha",
+                             "precision":8
+                          }
+                       },
+                       {
+                          "createAsset":{
+                             "assetName":"xlm",
+                             "domainId":"iroha",
+                             "precision":8
+                          }
+                       },
+                       {
+                          "createAsset":{
+                             "assetName":"xmr",
+                             "domainId":"iroha",
+                             "precision":8
                           }
                        },
                        {
                           "createAccount":{
                              "accountName":"admin",
-                             "domainId":"test",
-                             "publicKey":"313a07e6384776ed95447710d15e59148473ccfc052a681317a72a69f2a49910"
+                             "domainId":"iroha",
+                             "publicKey":"673d7a44dd32db621a2148bd89141cc1857cc7c704a998b9bc490238ddf44f25"
                           }
                        },
                        {
                           "createAccount":{
                              "accountName":"test",
-                             "domainId":"test",
+                             "domainId":"iroha",
                              "publicKey":"716fe505f69f18511a1b083915aa9ff73ef36e6688199f3959750db38b8f4bfc"
                           }
                        },
                        {
                           "appendRole":{
-                             "accountId":"admin@test",
+                             "accountId":"admin@iroha",
                              "roleName":"admin"
                           }
                        },
                        {
                           "appendRole":{
-                             "accountId":"admin@test",
+                             "accountId":"admin@iroha",
                              "roleName":"money_creator"
                           }
                        }

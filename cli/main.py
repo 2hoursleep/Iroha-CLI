@@ -1,44 +1,72 @@
+from os import close
 import click
-from .account_commands import *
-from .asset_commands import new_asset, increase_asset_qty,decrease_asset_qty,new_asset_transfer
-from .menu_nav import *
+from .commands import CommandsAPI
+from .queries import QueryAPI
+from .iroha_tools.client import IrohaClient
 
-def main_menu():
-    user_choice = None 
-    while user_choice != 'exit':
-        user_choice = click.prompt(menu_text,show_choices=menu_options)
-        if user_choice == '1':
-            user_choice = None
-            user_choice = click.prompt(commands_menu,show_choices=menu_options)
-            if user_choice == '1':
-                create_new_user_account()
-            elif user_choice == '2':
-                write_account_detail()
-            elif user_choice == '3':
-                click.echo('command to be implemented')
-            elif user_choice == '4':
-                click.echo('command to be implemented')
-            elif user_choice == '5':
-                click.echo('command to be implemented')
-            elif user_choice == '6':
-                click.echo('command to be implemented')
-            elif user_choice == '7':
-                click.echo('command to be implemented')
-            elif user_choice == '8':
-                click.echo('command to be implemented')
-            elif user_choice == '9':
-                click.echo('command to be implemented')
-            elif user_choice == '10':
-                view_asset_balance(account_id)
-            elif user_choice == '11':
-                new_asset()
-            elif user_choice == '12':
-                increase_asset_qty()
-            elif user_choice == '13':
-                decrease_asset_qty()
-            elif user_choice == '14':
-                new_asset_transfer(account_id)
-            else:
-                click.echo('Please Select Correct Option')
-                user_choice = None
-    print("exiting....Thank You  <[-_-]>... Developed By The Plenteum Team")
+# from .asset_commands import new_asset, increase_asset_qty,decrease_asset_qty,new_asset_transfer
+from .menu_nav import menu_text, main_options, commands_menu, welcome_msg
+from . import console, print_msg
+
+global account_id
+global private_key
+
+
+def iroha_health_check(iroha_client, account_id):
+    status = False
+    try:
+        result = iroha_client.get_account(account_id)
+        console.print(f"iroha health check {result}")
+        status = True
+    except Exception as error:
+        console.print(
+            f"[bold red]iroha health chech failed[/bold red] \n [bold yellow]{error}[/bold yellow] \n"
+        )
+        status = False
+    finally:
+        return status
+
+
+def main_menu_options():
+    print_msg(menu_text)
+    user_choice = click.prompt("Please Select Your Option", show_choices=menu_text)
+    if user_choice == "1":
+        user_choice = None
+        print_msg(commands_menu)
+        commands_main_menu()
+    if user_choice == "4":
+        pass
+        # iroha_health_check(iroha_client=iroha,account_id=None)
+    if user_choice == "exit":
+        pass
+    else:
+        click.echo("Please Select Correct Option")
+        user_choice = None
+
+
+def commands_main_menu():
+    global iroha_client
+    global account_id
+    iroha_commands = CommandsAPI(iroha_client)
+    user_choice = click.prompt("Please Select Your Option", show_choices=main_options)
+    if user_choice == "1":
+        iroha_commands.create_new_user_account()
+        commands_main_menu()
+    elif user_choice == "2":
+        iroha_commands.write_account_detail(account_id)
+    if user_choice == "b":
+        main_menu_options()
+
+
+def main_menu(account_id, private_key, iroha_host):
+    global iroha_client
+    iroha_client = IrohaClient(account_id, private_key, iroha_host)
+    user_choice = None
+    console.print(welcome_msg)
+    console.print(f"Logged in as: {account_id}")
+    console.print(f"Private Key: \n {str(private_key, 'utf-8')}")
+    while user_choice != "exit":
+        main_menu_options()
+    print_msg(
+        "exiting....\n Thank You  <[-_-]>... \n Developed By Farren Jackson (Distributed Ledger Solutions ZA)"
+    )

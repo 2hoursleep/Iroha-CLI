@@ -1,18 +1,23 @@
-menu_options = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+main_options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, "exit"]
 
-menu_text = '''
-Welcome To Iroha
+command_options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
-What Would You Like To Do?:
+welcome_msg = "[bold red]Welcome to Hyperledger Iroha CLi[/bold red]"
 
-1. New Transaction
-2. New Query
+menu_text = """
+[bold yellow]What Would You Like To Do?:[/bold yellow]
+
+1. New Transaction [italic green](Iroha Account & Asset Commands)[/italic green]
+2. New Query 
 3. New Transaction Status Request
+4. Test Iroha Node Connection [italic green](Test if specified Iroha Node can be reached)[/italic green]
 
-Type exit to quit or hit ctrl + c\n'''
+Type exit to quit or hit ctrl + c\n"""
 
-commands_menu = '''
--- Account Management--
+commands_menu = """
+
+[bold yellow]-- Account Management--[/bold yellow]
+
 1. Create Account (CreateAccount)
 2. Set Account Key/Value Detail (SetAccountDetail)
 3. Detach Role from account (DetactRole)
@@ -22,21 +27,27 @@ commands_menu = '''
 7. Revoke permission from account (revoke_perm)
 8. Add Signatory to Account (add_sign)
 9. Grant permission over your account (grant_perm)
--- Asset Management--
+
+[bold yellow]-- Asset Management --[/bold yellow]
+
 10. Create Asset (crt_ast)
 11. Add Asset Quantity (add_ast_qty)
 12. Transfer Assets (tran_ast)
 13. Subtract Assets Quantity (sub_ast_qty)
--- Domain Management--
-8. Create New Role (crt_role)
-10. Create Domain (crt_dmn)
+
+[bold yellow]-- Domain Management--[/bold yellow]
+
+14. Create New Role (crt_role)
+15. Create Domain (crt_dmn)
+
 --Network & Peer Management--
-15. Add Peer to Iroha Network (add_peer)
+16. Add Peer to Iroha Network (add_peer)
 
-0. Back to Main Menu (b)
-Type exit to quit or hit ctrl + c\n '''
+[bold red]0. Back to Main Menu (b)[/bold red]
 
-query_menu = '''
+Type exit to quit or hit ctrl + c\n """
+
+query_menu = """
 --Accounts--
 1. Get all permissions related to role (get_role_perm)
 2. Get Transactions by transactions' hashes (get_tx)
@@ -51,4 +62,4 @@ query_menu = '''
 9. Get Account Information (get_acc)
 0. Back (b)
 
-Type exit to quit or hit ctrl + c\n '''
+Type exit to quit or hit ctrl + c\n """

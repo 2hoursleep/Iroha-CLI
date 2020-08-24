@@ -10,4 +10,4 @@ else
   echo "WARNING: IROHA_POSTGRES_HOST is not defined.
     Do not wait for Postgres to become ready. Iroha may fail to start up"
 fi
-irohad --genesis_block genesis.block --config config.docker --keypair_name $KEY --overwrite-ledger
+irohad --genesis_block genesis.block --config config.docker --keypair_name $KEY
