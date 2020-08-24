@@ -21,17 +21,15 @@ class CommandsAPI:
         public_key = click.prompt("Public Key")
         self.iroha_client.create_new_account(user_name, domain, public_key)
 
-    def write_account_detail(self, account_id):
-        account_id = click.prompt(
-            "Account To Use : Username@domain", default=account_id
-        )
+    def write_account_detail(self):
+        account_id = click.prompt("Account To Use : Username@domain")
         key = click.prompt("Enter New Key, existing key entries will be overwritten")
         value = click.prompt("Please enter a value to set")
         self.iroha_client.set_account_detail(account_id, key, value)
 
     def grant_acc_read_permission(self):
         account_id = click.prompt(
-            "Account To Use : Username@domain", default=account_id
+            "Account To Use : Username@domain"
         )
         contact = click.prompt("Username@domain Your Write Acc Granting Permission")
         self.iroha_client.grant_account_read_permission(
@@ -40,7 +38,7 @@ class CommandsAPI:
 
         # ASSET COMMANDS#
 
-    def new_asset(self):
+    def create_new_asset(self):
         asset = click.prompt("New Asset Name Only")
         domain = click.prompt("Domain Name Only")
         precision = click.prompt("Precision", type=int)

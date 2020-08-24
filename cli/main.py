@@ -53,7 +53,7 @@ def commands_main_menu():
         iroha_commands.create_new_user_account()
         commands_main_menu()
     elif user_choice == "2":
-        iroha_commands.write_account_detail(account_id)
+        iroha_commands.write_account_detail()
     if user_choice == "b":
         main_menu_options()
 
