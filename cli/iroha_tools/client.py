@@ -365,3 +365,14 @@ class IrohaClient:
         )
         ic.sign_transaction(tx, self.user_private_key)
         self.submit_transaction(tx)
+
+    def detach_role_tx(self, account_id, role_name):
+        tx = self.iroha.transaction(
+            [
+                self.iroha.command(
+                    "DetachRole", account_id=account_id, role_name=role_name
+                )
+            ]
+        )
+        ic.sign_transaction(tx, self.user_private_key)
+        self.submit_transaction(tx)

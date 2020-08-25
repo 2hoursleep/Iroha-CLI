@@ -21,6 +21,11 @@ class CommandsAPI:
         public_key = click.prompt("Public Key")
         self.iroha_client.create_new_account(user_name, domain, public_key)
 
+    def detach_role(self):
+        account_id = click.prompt("Username For New Account")
+        role_name = click.prompt("Domain")
+        self.iroha_client.detach_role_tx(account_id, role_name)
+
     def write_account_detail(self):
         account_id = click.prompt("Account To Use : Username@domain")
         key = click.prompt("Enter New Key, existing key entries will be overwritten")
@@ -28,9 +33,7 @@ class CommandsAPI:
         self.iroha_client.set_account_detail(account_id, key, value)
 
     def grant_acc_read_permission(self):
-        account_id = click.prompt(
-            "Account To Use : Username@domain"
-        )
+        account_id = click.prompt("Account To Use : Username@domain")
         contact = click.prompt("Username@domain Your Write Acc Granting Permission")
         self.iroha_client.grant_account_read_permission(
             account_id=account_id, contact=contact

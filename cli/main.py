@@ -54,6 +54,16 @@ def commands_main_menu():
         commands_main_menu()
     elif user_choice == "2":
         iroha_commands.write_account_detail()
+    elif user_choice == "4":
+        iroha_commands.detach_role()
+    elif user_choice == "5":
+        iroha_commands.write_account_detail()
+    elif user_choice == "6":
+        iroha_commands.write_account_detail()
+    elif user_choice == "7":
+        iroha_commands.write_account_detail()
+    elif user_choice == "8":
+        iroha_commands.write_account_detail()
     if user_choice == "b":
         main_menu_options()
 

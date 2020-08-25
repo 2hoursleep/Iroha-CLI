@@ -7,6 +7,7 @@ import iroha.queries_pb2 as queries_pb2
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
 from iroha import Iroha, IrohaGrpc
 from iroha import IrohaCrypto
+from .commons import genesis_block
 
 
 class IrohaUtils:
@@ -31,7 +32,12 @@ class IrohaUtils:
 
     def generate_keypair(self):
         private_key = self.ic.private_key()
-        public_key = str(ic.derive_public_key(private_key), "utf-8")
+        public_key = str(self.ic.derive_public_key(private_key), "utf-8")
         private_key = str(private_key, "utf-8")
         key_pair = {"public_key": f"{public_key}", "private_key": f"{private_key}"}
         return json.dumps(key_pair, indent=4)
+
+    def genesis_tx(self, users, roles, peers, domains, admin_private_key):
+        genesis_block_unsigned = genesis_block(users, roles, peers, domains)
+        tx = self.ic.sign_transaction(genesis_block_unsigned, admin_private_key)
+        return tx
