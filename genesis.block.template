@@ -1,0 +1,19 @@
+{
+   "block_v1":{
+     "payload":{
+        "transactions":[
+           {
+              "payload":{
+                 "reducedPayload":{
+                    "commands":[],
+                    "quorum":1
+                 }
+              }
+           }
+        ],
+        "txNumber":1,
+        "height":"1",
+        "prevBlockHash":"0000000000000000000000000000000000000000000000000000000000000000"
+     }
+   }
+}

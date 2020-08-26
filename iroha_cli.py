@@ -83,6 +83,7 @@ def generate_user_keypair(account_id):
     "-pk", "--private_key", type=str, help="Private Key In ED2556 String Format",
 )
 def generate_user_keypair(account_id,private_key):
+    
     iroha_utils = IrohaUtils()
     if not account_id:
         questions = [
@@ -95,6 +96,10 @@ def generate_user_keypair(account_id,private_key):
         answers = prompt(questions)
         account_id = answers["account_id"]
     
+    peer = primitive_pb2.Peer()
+    peer.address = iroha_peer["address"]
+    peer.peer_key = iroha_peer["key"]
+        
     iroha_utils.genesis_tx(users, roles, peers, domains, admin_private_key)
     console.print(
         f"done\n {account_id}", style=style, justify="center"

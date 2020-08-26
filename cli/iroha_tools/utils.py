@@ -2,6 +2,7 @@ import binascii
 from binascii import Error
 import json
 import pprint
+from iroha import block_pb2
 import iroha.primitive_pb2 as iroha_primitive
 import iroha.queries_pb2 as queries_pb2
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
@@ -17,6 +18,7 @@ class IrohaUtils:
 
     def __init__(self):
         self.ic = IrohaCrypto
+        self.iroha = Iroha("admin@test")
 
     def save_keys_to_file(self, account_id):
         private_key = self.ic.private_key()
@@ -39,5 +41,11 @@ class IrohaUtils:
 
     def genesis_tx(self, users, roles, peers, domains, admin_private_key):
         genesis_block_unsigned = genesis_block(users, roles, peers, domains)
-        tx = self.ic.sign_transaction(genesis_block_unsigned, admin_private_key)
-        return tx
+        private_key = bytes(admin_private_key, "utf-8")
+        print(private_key)
+        # init_tx = self.iroha.transaction(genesis_block_unsigned)
+        # tx = self.ic.sign_transaction(init_tx,private_key)
+        result = {}
+        # dict_tx = MessageToDict(genesis_block_unsigned)
+        # block = block_pb2.Block_v1.Payload = dict_tx
+        return genesis_block_unsigned

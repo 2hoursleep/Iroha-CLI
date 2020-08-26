@@ -1,4 +1,4 @@
-from iroha import primitive_pb2
+from iroha import primitive_pb2, block_pb2
 from iroha import Iroha, IrohaCrypto
 import binascii
 from time import time
@@ -117,49 +117,49 @@ def genesis_block(users, roles, peers, domains):
     """
     commands = []
     for iroha_peer in peers:
-        peer = primitive_pb2.Peer()
-        peer.address = iroha_peer["address"]
-        peer.peer_key = iroha_peer["key"]
-        commands.append(command("AddPeer", peer=peer))
+        _add_peer = {
+            "addPeer": {
+                "peer": {
+                    "address": iroha_peer["address"],
+                    "peerKey": iroha_peer["peer_key"],
+                }
+            }
+        }
+        commands.append(_add_peer)
     for role in roles:
-        commands.append(
-            command(
-                "CreateRole", role_name=role["name"], permissions=role["permissions"]
-            )
-        )
+        _add_role = {
+            "createRole": {
+                "roleName": role["role_name"],
+                "permissions": role["permissions"],
+            }
+        }
+        commands.append(_add_role)
     for domain in domains:
-        commands.append(
-            command(
-                "CreateDomain",
-                domain_id=domain["domain_id"],
-                default_role=domain["default_role"],
-            )
-        )
+        _add_domain = {
+            "createRole": {
+                "domainId": domain["domain_id"],
+                "defaultRole": domain["default_role"],
+            }
+        }
+        commands.append(_add_domain)
     for user in users:
-        commands.append(
-            command(
-                "CreateAccount",
-                account_name=user["account_name"],
-                domain_id=user["domain_id"],
-                public_key=user["key"],
-            )
-        )
+        _add_user = {
+            "createAccount": {
+                "accountName": user["account_name"],
+                "domainId": user["domain_id"],
+                "publicKey": user["public_key"],
+            }
+        }
+        commands.append(_add_user)
         for user_role in user["user_roles"]:
-            commands.append(
-                command(
-                    "AppendRole",
-                    account_id=f"{user['account_name']}@{user['domain_id']}",
-                    role_name=user_role,
-                )
-            )
+            _append_user_role = {
+                "appendRole": {
+                    "accountId": f'{user["account_name"]}@{user["domain_id"]}',
+                    "roleName": user_role,
+                }
+            }
+            commands.append(_append_user_role)
     return commands
-
-
-def new_user(user_id):
-    private_key = IrohaCrypto.private_key()
-    if user_id.lower().startswith("admin"):
-        print("K{}".format(private_key.decode("utf-8")))
-    return {"id": user_id, "key": private_key}
 
 
 def hex(generator):
