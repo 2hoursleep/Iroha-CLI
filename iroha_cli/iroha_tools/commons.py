@@ -3,8 +3,6 @@ from iroha import Iroha, IrohaCrypto
 import binascii
 from time import time
 
-command = Iroha.command
-
 permissions_dict = {
     "can_append_role": primitive_pb2.can_append_role,
     "can_create_role": primitive_pb2.can_create_role,
@@ -56,64 +54,14 @@ def now():
     return int(time() * 1000)
 
 
-def all_permissions():
-    return [
-        primitive_pb2.can_append_role,
-        primitive_pb2.can_create_role,
-        primitive_pb2.can_detach_role,
-        primitive_pb2.can_add_asset_qty,
-        primitive_pb2.can_subtract_asset_qty,
-        primitive_pb2.can_add_peer,
-        primitive_pb2.can_add_signatory,
-        primitive_pb2.can_remove_signatory,
-        primitive_pb2.can_set_quorum,
-        primitive_pb2.can_create_account,
-        primitive_pb2.can_set_detail,
-        primitive_pb2.can_create_asset,
-        primitive_pb2.can_transfer,
-        primitive_pb2.can_receive,
-        primitive_pb2.can_create_domain,
-        primitive_pb2.can_read_assets,
-        primitive_pb2.can_get_roles,
-        primitive_pb2.can_get_my_account,
-        primitive_pb2.can_get_all_accounts,
-        primitive_pb2.can_get_domain_accounts,
-        primitive_pb2.can_get_my_signatories,
-        primitive_pb2.can_get_all_signatories,
-        primitive_pb2.can_get_domain_signatories,
-        primitive_pb2.can_get_my_acc_ast,
-        primitive_pb2.can_get_all_acc_ast,
-        primitive_pb2.can_get_domain_acc_ast,
-        primitive_pb2.can_get_my_acc_detail,
-        primitive_pb2.can_get_all_acc_detail,
-        primitive_pb2.can_get_domain_acc_detail,
-        primitive_pb2.can_get_my_acc_txs,
-        primitive_pb2.can_get_all_acc_txs,
-        primitive_pb2.can_get_domain_acc_txs,
-        primitive_pb2.can_get_my_acc_ast_txs,
-        primitive_pb2.can_get_all_acc_ast_txs,
-        primitive_pb2.can_get_domain_acc_ast_txs,
-        primitive_pb2.can_get_my_txs,
-        primitive_pb2.can_get_all_txs,
-        primitive_pb2.can_get_blocks,
-        primitive_pb2.can_grant_can_set_my_quorum,
-        primitive_pb2.can_grant_can_add_my_signatory,
-        primitive_pb2.can_grant_can_remove_my_signatory,
-        primitive_pb2.can_grant_can_transfer_my_assets,
-        primitive_pb2.can_grant_can_set_my_account_detail,
-    ]
-
-
-def genesis_block(users, roles, peers, domains):
+def genesis_block(users: list, roles: list, peers: list, domains: list): -> list
     """
-    Compose a set of common for all tests' genesis block transactions
-    :param admin: dict of id and private key of admin
-    :param alice: dict of id and private key of alice
+    Composes a set genesis block transactions
+    :param users: list of users containing name, domain_id and list of user roles
+    :param users: list of users containing name, domain_id and list of user roless
     :param test_permissions: permissions for users in test domain
-    :param multidomain: admin and alice accounts will be created in
-    different domains and the first domain users will have admin right
-    by default if True
-    :return: a list of Iroha.command's
+    :param multidomain:
+    :return: a list containing payload dictionaries containing Iroha.command's
     """
     commands = []
     for iroha_peer in peers:
@@ -160,16 +108,3 @@ def genesis_block(users, roles, peers, domains):
             }
             commands.append(_append_user_role)
     return commands
-
-
-def hex(generator):
-    """
-    Decorator for transactions' and queries generators.
-    Allows preserving the type of binaries for Binary Testing Framework.
-    """
-    prefix = "T" if generator.__name__.lower().endswith("tx") else "Q"
-    print(
-        "{}{}".format(
-            prefix, binascii.hexlify(generator().SerializeToString()).decode("utf-8")
-        )
-    )
